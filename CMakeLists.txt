@@ -1,9 +1,9 @@
-﻿# CMakeList.txt : Top-level CMake project file, do global configuration
-# and include sub-projects here.
-#
-cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required(VERSION 3.13)
 
-project ("NeRF")
+project("NeRF")
 
-# Include sub-projects.
-add_subdirectory ("NeRF")
+add_subdirectory("src")
+
+if (NOT MSVC)
+	message(FATAL_ERROR "MSVC not found")
+endif ()
