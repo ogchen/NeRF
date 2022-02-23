@@ -10,7 +10,8 @@
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "cl.exe",
                 "CMAKE_CXX_COMPILER": "cl.exe",
-                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/external/vcpkg/scripts/buildsystems/vcpkg.cmake"
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/external/vcpkg/scripts/buildsystems/vcpkg.cmake",
+                "CMAKE_CXX_STANDARD": "20"
             },
             "condition": {
                 "type": "equals",
@@ -20,7 +21,7 @@
         },
         {
             "name": "x64-debug",
-            "displayName": "x64 Debug",
+            "displayName": "x64-debug",
             "inherits": "windows-base",
             "architecture": {
                 "value": "x64",
@@ -32,7 +33,7 @@
         },
         {
             "name": "x64-release",
-            "displayName": "x64 Release",
+            "displayName": "x64-release",
             "inherits": "x64-debug",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
