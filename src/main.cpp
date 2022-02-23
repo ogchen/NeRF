@@ -1,8 +1,8 @@
-﻿#include <glad/glad.h>
+﻿#include <renderer/renderer.hpp>
+#include <renderer/window.hpp>
 
-#include <iostream>
-
-int main()
-{
-	std::cout << "Hello World" << std::endl;
+int main() {
+  renderer::Window window;
+  window.createWindow(800, 600, "Hello World");
+  renderer::initializeGLAD();
 }
