@@ -7,9 +7,6 @@ namespace renderer {
 class RendererError : public std::runtime_error {
   using std::runtime_error::runtime_error;
 };
-
-void initializeGLAD();
-
 }  // namespace renderer
 
 #endif

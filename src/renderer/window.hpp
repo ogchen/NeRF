@@ -1,12 +1,26 @@
 #ifndef SRC_RENDERER_WINDOW_HPP
 #define SRC_RENDERER_WINDOW_HPP
 
+#include <renderer/config.hpp>
+
+class GLFWwindow;
+
 namespace renderer {
+
 class Window {
  public:
-  Window();
+  Window(Config config);
   ~Window();
-  void createWindow(int width, int height, const char* name) const;
+
+  bool shouldClose();
+  void cycle();
+
+ private:
+  static void resizeViewport(GLFWwindow* window, int width, int height);
+  void createWindow(int width, int height, const char* name);
+
+  Config config_;
+  GLFWwindow* window_ = nullptr;
 };
 }  // namespace renderer
 
