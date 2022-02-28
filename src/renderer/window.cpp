@@ -1,51 +1,47 @@
 #include <renderer/window.hpp>
-#include <renderer/renderer.hpp>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
-#include <cstddef>
-#include <string>
+#include <spdlog/spdlog.h>
 
 namespace renderer {
+namespace {
+void errorHandler(int error, const char *description) {
+  spdlog::error("GLFW error with code {} and description {}", error,
+                description);
+}
+}  // namespace
 
-Window::Window(Config config) : config_(config) {
-  glfwInit();
+Window::Factory::Factory() {
+  glfwSetErrorCallback(errorHandler);
+  if (not glfwInit()) {
+    throw Error("Failed to initialize GLFW");
+  }
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-  createWindow(config_.width, config_.height, config_.name);
-
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-    throw RendererError("Failed to initialize GLAD");
-  }
-
-  glfwSetFramebufferSizeCallback(window_, Window::resizeViewport);
-
-  auto colour = config_.colour;
-  glClearColor(colour.r, colour.g, colour.b, colour.a);
 }
 
-Window::~Window() { glfwTerminate(); }
+Window::Factory::~Factory() { glfwTerminate(); }
 
-void Window::createWindow(int width, int height, const char* name) {
-  window_ = glfwCreateWindow(width, height, name, nullptr, nullptr);
+Window::Window(const Config &config) {
+  window_ = glfwCreateWindow(config.width, config.height, config.name.c_str(),
+                             nullptr, nullptr);
   if (window_ == nullptr) {
-    throw RendererError("Failed to create GLFW window");
+    throw Error("Failed to create GLFW window");
   }
   glfwMakeContextCurrent(window_);
+
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    throw Error("Failed to initialize GLAD");
+  }
+
+  auto resizeViewport = [](GLFWwindow *, int width, int height) {
+    glViewport(0, 0, width, height);
+  };
+  glfwSetFramebufferSizeCallback(window_, resizeViewport);
 }
 
-void Window::resizeViewport(GLFWwindow*, int width, int height) {
-  glViewport(0, 0, width, height);
-}
+Window::~Window() { glfwDestroyWindow(window_); }
 
-bool Window::shouldClose() { return glfwWindowShouldClose(window_); }
-
-void Window::cycle() {
-  glClear(GL_COLOR_BUFFER_BIT);
-  glfwSwapBuffers(window_);
-  glfwPollEvents();
-}
 }  // namespace renderer
