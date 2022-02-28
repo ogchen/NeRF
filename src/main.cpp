@@ -10,8 +10,7 @@
 #include <string>
 #include <vector>
 
-// #include <torch/torch.h>
-// #include <iostream>
+#include <torch/torch.h>
 
 void configureLogging() {
 #ifdef NDEBUG
@@ -42,10 +41,9 @@ renderer::Renderer createRenderer() {
 
 int main() {
   configureLogging();
-  renderer::Renderer renderer(createRenderer());
-  while (renderer.shouldContinue()) {
-    renderer.cycle();
-  }
-  //torch::Tensor tensor = torch::rand({2, 3});
-  //std::cout << tensor << std::endl;
+  // renderer::Renderer renderer(createRenderer());
+  // while (renderer.shouldContinue()) {
+  //   renderer.cycle();
+  // }
+  torch::Tensor tensor = torch::eye(3);
 }
