@@ -86,7 +86,6 @@ GLuint compileShaders(std::span<ShaderInfo> shaders) {
     spdlog::info("Linked shaders with log: {}", infoLog);
   }
 
-  glUseProgram(shaderProgram);
   for (const auto& id : shaderIDs) {
     glDeleteShader(id);
   }

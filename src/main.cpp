@@ -26,7 +26,7 @@ std::string readFile(const std::string& filePath) {
 }
 
 renderer::Renderer createRenderer() {
-  renderer::Window::Factory& windowFactory =
+  const renderer::Window::Factory& windowFactory =
       renderer::Window::Factory::getInstance();
   renderer::Window::Config windowConfig{
       .width = 800, .height = 600, .name = "NeRF"};

@@ -13,15 +13,17 @@ class GLFWwindow;
 namespace renderer {
 class Renderer {
  public:
-  Renderer(Window::Factory &windowFactory, const Window::Config &windowConfig,
-           std::span<ShaderInfo> shaders, const glm::vec4 &clearColor);
+  Renderer(const Window::Factory &windowFactory,
+           const Window::Config &windowConfig, std::span<ShaderInfo> shaders,
+           const glm::vec4 &clearColor);
 
   bool shouldContinue();
   void cycle();
 
  private:
   Window window_;
-  glm::vec4 clearColor_;
+  GLuint shaderProgram_;
+  GLuint arrayObject_;
 };
 }  // namespace renderer
 
