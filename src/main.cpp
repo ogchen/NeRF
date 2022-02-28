@@ -10,6 +10,9 @@
 #include <string>
 #include <vector>
 
+// #include <torch/torch.h>
+// #include <iostream>
+
 void configureLogging() {
 #ifdef NDEBUG
   spdlog::set_level(spdlog::level::info);
@@ -28,8 +31,7 @@ std::string readFile(const std::string& filePath) {
 renderer::Renderer createRenderer() {
   const renderer::Window::Factory& windowFactory =
       renderer::Window::Factory::getInstance();
-  renderer::Window::Config windowConfig{
-      .width = 800, .height = 600, .name = "NeRF"};
+  renderer::Window::Config windowConfig{800, 600, "NeRF"};
   std::vector<renderer::ShaderInfo> shaders{
       renderer::ShaderInfo{GL_VERTEX_SHADER, readFile("shaders/triangle.vert")},
       renderer::ShaderInfo{GL_FRAGMENT_SHADER,
@@ -44,4 +46,6 @@ int main() {
   while (renderer.shouldContinue()) {
     renderer.cycle();
   }
+  //torch::Tensor tensor = torch::rand({2, 3});
+  //std::cout << tensor << std::endl;
 }

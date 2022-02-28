@@ -14,7 +14,7 @@ void errorHandler(int error, const char *description) {
 
 Window::Factory::Factory() {
   glfwSetErrorCallback(errorHandler);
-  if (not glfwInit()) {
+  if (!glfwInit()) {
     throw Error("Failed to initialize GLFW");
   }
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);

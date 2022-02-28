@@ -9,9 +9,10 @@ namespace renderer {
 
 Renderer::Renderer(const Window::Factory &windowFactory,
                    const Window::Config &windowConfig,
-                   std::span<ShaderInfo> shaders, const glm::vec4 &clearColor)
+                   const std::vector<ShaderInfo> &shaders,
+                   const glm::vec4 &clearColor)
     : window_(windowFactory.createWindow(windowConfig)),
-      shaderProgram_(compileShaders(shaders)) {
+      shaderProgram_(shaders) {
   glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 
   float vertices[] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f};
@@ -31,13 +32,13 @@ Renderer::Renderer(const Window::Factory &windowFactory,
 }
 
 bool Renderer::shouldContinue() {
-  return not glfwWindowShouldClose(window_.getWindow());
+  return !glfwWindowShouldClose(window_.getWindow());
 }
 
 void Renderer::cycle() {
   glClear(GL_COLOR_BUFFER_BIT);
 
-  glUseProgram(shaderProgram_);
+  shaderProgram_.use();
   glBindVertexArray(arrayObject_);
   glDrawArrays(GL_TRIANGLES, 0, 3);
 

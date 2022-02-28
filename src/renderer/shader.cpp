@@ -7,7 +7,6 @@
 
 #include <utility>
 #include <string>
-#include <vector>
 
 namespace renderer {
 namespace {
@@ -23,32 +22,37 @@ std::string getShaderType(GLint shaderType) {
       return "unknown";
   }
 }
+}  // namespace
 
-std::pair<bool, std::string> getCompileStatus(GLuint id) {
-  GLint success;
-  glGetShaderiv(id, GL_COMPILE_STATUS, &success);
-  GLint logLength;
-  glGetShaderiv(id, GL_INFO_LOG_LENGTH, &logLength);
+ShaderProgram::ShaderProgram(const std::vector<ShaderInfo>& shaders)
+    : shaderProgram_(glCreateProgram()) {
+  std::vector<GLuint> shaderIDs;
 
-  std::string infoLog(logLength, ' ');
-  glGetShaderInfoLog(id, logLength, nullptr, infoLog.data());
+  for (const auto& shader : shaders) {
+    GLuint id = compileShader(shader);
+    shaderIDs.push_back(id);
+    glAttachShader(shaderProgram_, id);
+  }
+  glLinkProgram(shaderProgram_);
 
-  return std::make_pair(static_cast<bool>(success), infoLog);
+  const auto [success, infoLog] = getLinkStatus(shaderProgram_);
+  if (!success) {
+    throw RendererError(
+        fmt::format("Failed to link shaders with error {}", infoLog));
+  } else if (!infoLog.empty()) {
+    spdlog::info("Linked shaders with log: {}", infoLog);
+  }
+
+  for (const auto& id : shaderIDs) {
+    glDeleteShader(id);
+  }
 }
 
-std::pair<bool, std::string> getLinkStatus(GLuint id) {
-  GLint success;
-  glGetProgramiv(id, GL_LINK_STATUS, &success);
-  GLint logLength;
-  glGetProgramiv(id, GL_INFO_LOG_LENGTH, &logLength);
+ShaderProgram::~ShaderProgram() { glDeleteProgram(shaderProgram_); }
 
-  std::string infoLog(logLength, ' ');
-  glGetProgramInfoLog(id, logLength, nullptr, infoLog.data());
+void ShaderProgram::use() const { glUseProgram(shaderProgram_); }
 
-  return std::make_pair(static_cast<bool>(success), infoLog);
-}
-
-GLuint compileShader(const ShaderInfo& info) {
+GLuint ShaderProgram::compileShader(const ShaderInfo& info) const {
   GLuint shaderID;
   shaderID = glCreateShader(info.type);
   const char* content = info.content.c_str();
@@ -57,39 +61,36 @@ GLuint compileShader(const ShaderInfo& info) {
 
   std::string shaderType = getShaderType(info.type);
   const auto [success, infoLog] = getCompileStatus(shaderID);
-  if (not success) {
+  if (!success) {
     throw RendererError(fmt::format("Failed to compile {} shader with error {}",
                                     shaderType, infoLog));
-  } else if (not infoLog.empty()) {
+  } else if (!infoLog.empty()) {
     spdlog::info("Compiled {} shader with log: {}", shaderType, infoLog);
   }
   return shaderID;
 }
-}  // namespace
 
-GLuint compileShaders(std::span<ShaderInfo> shaders) {
-  GLuint shaderProgram = glCreateProgram();
-  std::vector<GLuint> shaderIDs;
+ShaderProgram::Status ShaderProgram::getCompileStatus(GLuint id) const {
+  GLint success;
+  glGetShaderiv(id, GL_COMPILE_STATUS, &success);
+  GLint logLength;
+  glGetShaderiv(id, GL_INFO_LOG_LENGTH, &logLength);
 
-  for (const auto& shader : shaders) {
-    GLuint id = compileShader(shader);
-    shaderIDs.push_back(id);
-    glAttachShader(shaderProgram, id);
-  }
-  glLinkProgram(shaderProgram);
+  std::string infoLog(logLength, ' ');
+  glGetShaderInfoLog(id, logLength, nullptr, infoLog.data());
 
-  const auto [success, infoLog] = getLinkStatus(shaderProgram);
-  if (not success) {
-    throw RendererError(
-        fmt::format("Failed to link shaders with error {}", infoLog));
-  } else if (not infoLog.empty()) {
-    spdlog::info("Linked shaders with log: {}", infoLog);
-  }
+  return Status(static_cast<bool>(success), infoLog);
+}
 
-  for (const auto& id : shaderIDs) {
-    glDeleteShader(id);
-  }
+ShaderProgram::Status ShaderProgram::getLinkStatus(GLuint id) const {
+  GLint success;
+  glGetProgramiv(id, GL_LINK_STATUS, &success);
+  GLint logLength;
+  glGetProgramiv(id, GL_INFO_LOG_LENGTH, &logLength);
 
-  return shaderProgram;
+  std::string infoLog(logLength, ' ');
+  glGetProgramInfoLog(id, logLength, nullptr, infoLog.data());
+
+  return Status(static_cast<bool>(success), infoLog);
 }
 }  // namespace renderer

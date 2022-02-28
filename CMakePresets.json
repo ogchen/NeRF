@@ -11,7 +11,7 @@
         "CMAKE_C_COMPILER": "cl.exe",
         "CMAKE_CXX_COMPILER": "cl.exe",
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/external/vcpkg/scripts/buildsystems/vcpkg.cmake",
-        "CMAKE_CXX_STANDARD": "20"
+        "CMAKE_CXX_STANDARD": "17"
       },
       "condition": {
         "type": "equals",
@@ -28,7 +28,8 @@
         "strategy": "external"
       },
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_PREFIX_PATH": "${sourceDir}/../libtorch/Debug"
       }
     },
     {
@@ -36,7 +37,8 @@
       "displayName": "x64-release",
       "inherits": "x64-debug",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_PREFIX_PATH": "${sourceDir}/../libtorch/Release"
       }
     }
   ]

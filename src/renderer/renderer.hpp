@@ -6,7 +6,7 @@
 
 #include <glm/glm.hpp>
 
-#include <span>
+#include <vector>
 
 class GLFWwindow;
 
@@ -14,15 +14,15 @@ namespace renderer {
 class Renderer {
  public:
   Renderer(const Window::Factory &windowFactory,
-           const Window::Config &windowConfig, std::span<ShaderInfo> shaders,
-           const glm::vec4 &clearColor);
+           const Window::Config &windowConfig,
+           const std::vector<ShaderInfo> &shaders, const glm::vec4 &clearColor);
 
   bool shouldContinue();
   void cycle();
 
  private:
   Window window_;
-  GLuint shaderProgram_;
+  ShaderProgram shaderProgram_;
   GLuint arrayObject_;
 };
 }  // namespace renderer
